@@ -1,7 +1,7 @@
 # manifold-impact-analytics
-This repository provides the code for Manifold, an automated research impact analytics platform that was developed by Steven Braun for use in the University of Minnesota Libraries and Medical School.
-
 Copyright (C) 2015 Steven Braun
+
+This repository provides the code for Manifold, an automated research impact analytics platform that was developed by Steven Braun for use in the University of Minnesota Libraries and Medical School.
 
 ABOUT MANIFOLD
 
@@ -9,15 +9,15 @@ Manifold is a platform that creates web-accessible profiles of scholarly output 
 
 ABOUT THE FILES
 
-Manifold is built on a standard LAMP stack; all pages and data processes are executed via PHP scripts, data are stored in a MySQL database, and the platform is handled via a Linux/Apache server configuration. The code is intended to be lightweight and extendible to enable further development and institution-specific customization.
+Manifold is built on a standard LAMP stack; all pages and data processes are executed via PHP scripts, data are stored in a MySQL database, and the platform is handled via a Linux/Apache server configuration. The code is intended to be lightweight and extensible to enable further development and institution-specific customization.
 
 USING THE FILES
 
-The code for Manifold in its entirety, including all files in this repository, is protected under a GNU General Public License (v2). See LICENSE.md for more details.
+The code for Manifold in its entirety, including all files in this repository, is protected under a GNU General Public License (v2). See LICENSE.md for more details. In subsequent modifications and distributions, full attribution must be given to the original author (Steven Braun).
 
 FULL DOCUMENTATION
 
-Full documentation for Manifold is provided in the file MANIFOLD_FULL_DOCUMENTATION (PDF).
+Full documentation for Manifold is provided in the file MANIFOLD_FULL_DOCUMENTATION (PDF). This includes a more detailed description of its system structure as well as screenshots of its functionality.
 
 CONTACT
 
