@@ -1,0 +1,94 @@
+/*
+
+manifold-impact-analytics
+https://github.com/braunsg/manifold-impact-analytics
+
+Open source code for Manifold, an automated impact analytics and visualization platform developed by
+Steven Braun.
+
+COPYRIGHT (C) 2015 Steven Braun
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+
+A full copy of the license is included in LICENSE.md.
+
+//////////////////////////////////////////////////////////////////////////////////////////
+/////// About this file
+
+MySQL query generating faculty_data table
+
+*/
+
+-- phpMyAdmin SQL Dump
+-- version 4.1.12
+-- http://www.phpmyadmin.net
+--
+-- Host: localhost
+-- Generation Time: Jul 08, 2015 at 08:28 PM
+-- Server version: 5.6.21
+-- PHP Version: 5.5.14
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+
+--
+-- Database: `manifold_example`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `faculty_data`
+--
+
+CREATE TABLE IF NOT EXISTS `faculty_data` (
+  `internetID` varchar(25) NOT NULL DEFAULT '',
+  `firstName` varchar(100) DEFAULT NULL,
+  `lastName` varchar(100) DEFAULT NULL,
+  `title` varchar(150) DEFAULT NULL,
+  `jobCode` varchar(10) DEFAULT NULL COMMENT 'UMN job code',
+  `sex` varchar(1) DEFAULT NULL COMMENT 'Indicator for sex, M/F (or other?)',
+  `tenure_status` varchar(50) DEFAULT NULL COMMENT 'Tenure status code',
+  `class_description` varchar(50) DEFAULT NULL COMMENT 'Description of position type',
+  `percentTime` decimal(10,5) DEFAULT '0.00000' COMMENT 'Percent time',
+  `status_faculty` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Flag for full faculty status',
+  `status_affiliate` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Flag for affiliate status',
+  `lastUpdated` datetime DEFAULT NULL COMMENT 'Date of last update to faculty record',
+  `status_current` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Indicates faculty is current',
+  PRIMARY KEY (`internetID`),
+  UNIQUE KEY `internetID` (`internetID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Bibliographic data about faculty';
+
+--
+-- Dumping data for table `faculty_data`
+--
+
+INSERT INTO `faculty_data` (`internetID`, `firstName`, `lastName`, `title`, `jobCode`, `sex`, `tenure_status`, `class_description`, `percentTime`, `status_faculty`, `status_affiliate`, `lastUpdated`, `status_current`) VALUES
+('test_user', 'Test', 'User', 'Test User', '1234', NULL, 'Tenured', NULL, '1.00000', 1, 0, '2015-07-08 14:39:28', 1);
+
+--
+-- Triggers `faculty_data`
+--
+DROP TRIGGER IF EXISTS `faculty_update`;
+DELIMITER //
+CREATE TRIGGER `faculty_update` BEFORE UPDATE ON `faculty_data`
+ FOR EACH ROW BEGIN SET NEW.lastUpdated = CURRENT_TIMESTAMP; END
+//
+DELIMITER ;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

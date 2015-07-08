@@ -1,0 +1,2 @@
+CREATE TRIGGER `faculty_update` BEFORE UPDATE ON `faculty_data`
+ FOR EACH ROW BEGIN SET NEW.lastUpdated = CURRENT_TIMESTAMP; END

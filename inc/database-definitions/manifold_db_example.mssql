@@ -1,0 +1,468 @@
+/*
+
+manifold-impact-analytics
+https://github.com/braunsg/manifold-impact-analytics
+
+Open source code for Manifold, an automated impact analytics and visualization platform developed by
+Steven Braun.
+
+COPYRIGHT (C) 2015 Steven Braun
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+
+A full copy of the license is included in LICENSE.md.
+
+//////////////////////////////////////////////////////////////////////////////////////////
+/////// About this file
+
+MySQL query generating entire Manifold database structure, including all tables (with example entries) and triggers
+
+*/
+
+-- phpMyAdmin SQL Dump
+-- version 4.1.12
+-- http://www.phpmyadmin.net
+--
+-- Host: localhost
+-- Generation Time: Jul 08, 2015 at 08:27 PM
+-- Server version: 5.6.21
+-- PHP Version: 5.5.14
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+
+--
+-- Database: `manifold_example`
+--
+CREATE DATABASE IF NOT EXISTS `manifold_example` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
+USE `manifold_example`;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `affiliation_data`
+--
+
+CREATE TABLE IF NOT EXISTS `affiliation_data` (
+  `affilID` varchar(25) NOT NULL COMMENT 'Affiliation ID',
+  `affilMaster` varchar(100) NOT NULL COMMENT 'Master affilID to which org belongs (e.g., dept in college)',
+  `affilType` varchar(100) NOT NULL COMMENT 'Affiliation type (college, department)',
+  `affilName` varchar(150) NOT NULL COMMENT 'Affiliation display name',
+  `umn_affilCode` varchar(8) DEFAULT NULL COMMENT 'UMN department code',
+  `umn_zdeptid` varchar(6) DEFAULT NULL COMMENT 'UMN zdeptID (replacing dept code)',
+  `umn_deptid` varchar(10) DEFAULT NULL COMMENT 'UMN deptID (different from zdeptID)',
+  `display` tinyint(1) NOT NULL DEFAULT '1' COMMENT 'Whether or not to display department on Manifold lists',
+  PRIMARY KEY (`affilID`),
+  UNIQUE KEY `deptID` (`affilID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Stores data about affiliations represented in system';
+
+--
+-- Dumping data for table `affiliation_data`
+--
+
+INSERT INTO `affiliation_data` (`affilID`, `affilMaster`, `affilType`, `affilName`, `umn_affilCode`, `umn_zdeptid`, `umn_deptid`, `display`) VALUES
+('D0001', 'C0001', 'department', 'Anesthesiology', NULL, NULL, NULL, 1),
+('D0002', 'C0001', 'department', 'Biochemistry, Molecular Biology, Biophysics', NULL, NULL, NULL, 1),
+('D0003', 'C0001', 'department', 'Radiation Oncology', NULL, NULL, NULL, 1),
+('D0004', 'C0001', 'department', 'Urologic Surgery', NULL, NULL, NULL, 1),
+('D0005', 'C0001', 'department', 'Cancer Center', NULL, NULL, NULL, 0);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `contact_messages`
+--
+
+CREATE TABLE IF NOT EXISTS `contact_messages` (
+  `contact_record_no` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Index number for contact message',
+  `contact_name` varchar(150) NOT NULL COMMENT 'Contact name',
+  `contact_email` varchar(40) NOT NULL COMMENT 'Contact email',
+  `contact_message` varchar(2000) NOT NULL COMMENT 'Message',
+  PRIMARY KEY (`contact_record_no`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Stores messages sent through the contact form' AUTO_INCREMENT=2 ;
+
+--
+-- Dumping data for table `contact_messages`
+--
+
+INSERT INTO `contact_messages` (`contact_record_no`, `contact_name`, `contact_email`, `contact_message`) VALUES
+(1, 'Test user', 'test@example.com', 'How do I use Manifold?');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `data_sources`
+--
+
+CREATE TABLE IF NOT EXISTS `data_sources` (
+  `sourceID` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Source number/ID',
+  `sourceName` varchar(250) NOT NULL COMMENT 'Name of source',
+  `sourceDescription` varchar(500) NOT NULL COMMENT 'Description of source',
+  PRIMARY KEY (`sourceID`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Information about publication data sources' AUTO_INCREMENT=3 ;
+
+--
+-- Dumping data for table `data_sources`
+--
+
+INSERT INTO `data_sources` (`sourceID`, `sourceName`, `sourceDescription`) VALUES
+(1, 'scopus', 'Publication data retrieved through the Scopus API'),
+(2, 'pubmed', 'Publication data retrieved and imported through the PubMed API');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `events_master`
+--
+
+CREATE TABLE IF NOT EXISTS `events_master` (
+  `eventID` int(11) NOT NULL AUTO_INCREMENT,
+  `eventType` varchar(250) NOT NULL,
+  `eventDescription` varchar(1000) NOT NULL,
+  `eventStart` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `eventFinish` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `date_threshold` date DEFAULT NULL COMMENT 'End date of the data that was pulled, if applicable',
+  `processLogFile` varchar(250) DEFAULT NULL COMMENT 'Name of the process log file',
+  `errorLogFile` varchar(250) DEFAULT NULL COMMENT 'Name of the error log file',
+  PRIMARY KEY (`eventID`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='This table records database- or table-wide processes, such as new pub data pulls' AUTO_INCREMENT=94 ;
+
+--
+-- Dumping data for table `events_master`
+--
+
+INSERT INTO `events_master` (`eventID`, `eventType`, `eventDescription`, `eventStart`, `eventFinish`, `date_threshold`, `processLogFile`, `errorLogFile`) VALUES
+(82, 'publication_data_full_update', 'Pull NEW publications for all current faculty, verify EXISTING records are valid', '2015-07-02 22:30:02', '2015-07-03 05:38:07', '2015-06-30', 'get-scopus-records_processLog.txt', 'get-scopus-records_errorLog.txt'),
+(83, 'all_records_full_update', 'Update all records in the publications table, including citation counts and missing or incomplete bibliographic data for verified faculty_publications records', '2015-07-03 10:17:12', '2015-07-03 23:13:52', NULL, 'update-pub-records_processLog.txt', 'update-pub-records_errorLog.txt');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `faculty_affiliations`
+--
+
+CREATE TABLE IF NOT EXISTS `faculty_affiliations` (
+  `recordNumber` int(11) NOT NULL AUTO_INCREMENT,
+  `internetID` varchar(100) NOT NULL COMMENT 'Faculty internet ID',
+  `affilClass` varchar(100) NOT NULL COMMENT 'Affiliation class (i.e., primary, secondary)',
+  `affilID` varchar(100) NOT NULL COMMENT 'Affiliation ID',
+  PRIMARY KEY (`recordNumber`),
+  UNIQUE KEY `internetID` (`internetID`,`affilClass`,`affilID`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Houses affiliation data for all faculty; faculty may have multiple affiliations' AUTO_INCREMENT=3 ;
+
+--
+-- Dumping data for table `faculty_affiliations`
+--
+
+INSERT INTO `faculty_affiliations` (`recordNumber`, `internetID`, `affilClass`, `affilID`) VALUES
+(2, 'test_user', 'DISPLAY', 'display_affil_ID'),
+(1, 'test_user', 'PRIMARY', 'primary_affil_ID');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `faculty_data`
+--
+
+CREATE TABLE IF NOT EXISTS `faculty_data` (
+  `internetID` varchar(25) NOT NULL DEFAULT '',
+  `firstName` varchar(100) DEFAULT NULL,
+  `lastName` varchar(100) DEFAULT NULL,
+  `title` varchar(150) DEFAULT NULL,
+  `jobCode` varchar(10) DEFAULT NULL COMMENT 'UMN job code',
+  `sex` varchar(1) DEFAULT NULL COMMENT 'Indicator for sex, M/F (or other?)',
+  `tenure_status` varchar(50) DEFAULT NULL COMMENT 'Tenure status code',
+  `class_description` varchar(50) DEFAULT NULL COMMENT 'Description of position type',
+  `percentTime` decimal(10,5) DEFAULT '0.00000' COMMENT 'Percent time',
+  `status_faculty` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Flag for full faculty status',
+  `status_affiliate` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Flag for affiliate status',
+  `lastUpdated` datetime DEFAULT NULL COMMENT 'Date of last update to faculty record',
+  `status_current` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Indicates faculty is current',
+  PRIMARY KEY (`internetID`),
+  UNIQUE KEY `internetID` (`internetID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Bibliographic data about faculty';
+
+--
+-- Dumping data for table `faculty_data`
+--
+
+INSERT INTO `faculty_data` (`internetID`, `firstName`, `lastName`, `title`, `jobCode`, `sex`, `tenure_status`, `class_description`, `percentTime`, `status_faculty`, `status_affiliate`, `lastUpdated`, `status_current`) VALUES
+('test_user', 'Test', 'User', 'Test User', '1234', NULL, 'Tenured', NULL, '1.00000', 1, 0, '2015-07-08 14:39:28', 1);
+
+--
+-- Triggers `faculty_data`
+--
+DROP TRIGGER IF EXISTS `faculty_update`;
+DELIMITER //
+CREATE TRIGGER `faculty_update` BEFORE UPDATE ON `faculty_data`
+ FOR EACH ROW BEGIN SET NEW.lastUpdated = CURRENT_TIMESTAMP; END
+//
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `faculty_identifiers`
+--
+
+CREATE TABLE IF NOT EXISTS `faculty_identifiers` (
+  `recordNumber` int(11) NOT NULL AUTO_INCREMENT,
+  `internetID` varchar(100) NOT NULL COMMENT 'Faculty internet ID',
+  `idType` varchar(100) NOT NULL COMMENT 'ID type (e.g., Scopus, ORCID)',
+  `idValue` varchar(100) DEFAULT NULL COMMENT 'The ID',
+  PRIMARY KEY (`recordNumber`),
+  UNIQUE KEY `internetID` (`internetID`,`idType`,`idValue`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Stores different identifiers for all faculty' AUTO_INCREMENT=2 ;
+
+--
+-- Dumping data for table `faculty_identifiers`
+--
+
+INSERT INTO `faculty_identifiers` (`recordNumber`, `internetID`, `idType`, `idValue`) VALUES
+(1, 'test_user', 'scopus_id', '12345678');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `faculty_metrics`
+--
+
+CREATE TABLE IF NOT EXISTS `faculty_metrics` (
+  `internetID` varchar(100) NOT NULL COMMENT 'Internet ID',
+  `hIndex` int(50) DEFAULT NULL COMMENT 'h-index',
+  `hflIndex` int(50) DEFAULT NULL COMMENT 'hflIndex',
+  `pubCount` int(50) DEFAULT NULL COMMENT 'Total publication count',
+  `flPubCount` int(50) DEFAULT NULL COMMENT 'Total first/last author publications',
+  `totalCitations` int(50) DEFAULT NULL COMMENT 'Total number of citations',
+  `totalflCitations` int(50) DEFAULT NULL COMMENT 'Total number of citations to first/last author papers',
+  `lastUpdated` datetime DEFAULT NULL COMMENT 'Last update',
+  PRIMARY KEY (`internetID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Holds all faculty metric data, indexed by internet ID';
+
+--
+-- Dumping data for table `faculty_metrics`
+--
+
+INSERT INTO `faculty_metrics` (`internetID`, `hIndex`, `hflIndex`, `pubCount`, `flPubCount`, `totalCitations`, `totalflCitations`, `lastUpdated`) VALUES
+('test_user', 10, 5, 21, 6, 100, 50, '2015-07-08 14:14:43');
+
+--
+-- Triggers `faculty_metrics`
+--
+DROP TRIGGER IF EXISTS `faculty_metrics_update`;
+DELIMITER //
+CREATE TRIGGER `faculty_metrics_update` BEFORE UPDATE ON `faculty_metrics`
+ FOR EACH ROW SET NEW.lastUpdated = CURRENT_TIMESTAMP
+//
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `faculty_publications`
+--
+
+CREATE TABLE IF NOT EXISTS `faculty_publications` (
+  `recordNumber` int(11) NOT NULL AUTO_INCREMENT,
+  `fpid` varchar(100) NOT NULL COMMENT 'Faculty publication attribution ID',
+  `internetID` varchar(50) NOT NULL,
+  `scopusID` varchar(35) DEFAULT NULL COMMENT 'Scopus author ID',
+  `mpid` varchar(100) NOT NULL COMMENT 'Manifold publication ID',
+  `scopus_eid` varchar(100) DEFAULT NULL COMMENT 'Scopus eID',
+  `authorPosition` varchar(25) DEFAULT NULL,
+  `authorCount` varchar(25) NOT NULL,
+  `record_valid` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Flag indicating if faculty publication link is valid when reconciled with Scopus data',
+  PRIMARY KEY (`recordNumber`),
+  UNIQUE KEY `ind` (`recordNumber`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='Stores all faculty authorship data' AUTO_INCREMENT=92509 ;
+
+--
+-- Dumping data for table `faculty_publications`
+--
+
+INSERT INTO `faculty_publications` (`recordNumber`, `fpid`, `internetID`, `scopusID`, `mpid`, `scopus_eid`, `authorPosition`, `authorCount`, `record_valid`) VALUES
+(1, 'fpid_1', 'test_user', NULL, 'mpid_1', '12345678', '2', '3', 1),
+(2, 'fpid_2', 'test_user', NULL, 'mpid_2', '12345678', '2', '2', 1),
+(3, 'fpid_3', 'test_user', NULL, 'mpid_3', '12345678', '1', '1', 1),
+(4, 'fpid_4', 'test_user', NULL, 'mpid_4', '12345678', '7', '7', 1),
+(5, 'fpid_5', 'test_user', NULL, 'mpid_5', '12345678', '4', '9', 0);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `hr_field_mappings`
+--
+
+CREATE TABLE IF NOT EXISTS `hr_field_mappings` (
+  `hr_field_name` varchar(100) NOT NULL COMMENT 'Central HR system field name',
+  `manifold_field_name` varchar(50) NOT NULL COMMENT 'Corresponding Manifold field name',
+  `manifold_field_table` varchar(50) NOT NULL COMMENT 'Table of corresponding Manifold field',
+  PRIMARY KEY (`hr_field_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='This table maps central HR fields to Manifold fields';
+
+--
+-- Dumping data for table `hr_field_mappings`
+--
+
+INSERT INTO `hr_field_mappings` (`hr_field_name`, `manifold_field_name`, `manifold_field_table`) VALUES
+('field1', 'percentTime', 'faculty_data'),
+('field2', 'class_description', 'faculty_data'),
+('field3', 'umn_deptid', 'affiliation_data'),
+('field4', 'firstName', 'faculty_data'),
+('field5', 'internetID', 'faculty_data'),
+('field6', 'jobCode', 'faculty_data'),
+('field7', 'title', 'faculty_data'),
+('field8', 'lastName', 'faculty_data'),
+('field9', 'sex', 'faculty_data'),
+('field_10', 'tenure_status', 'faculty_data'),
+('field_11', 'umn_zdeptid', 'affiliation_data'),
+('field_12', 'affilName', 'affiliation_data');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `publication_data`
+--
+
+CREATE TABLE IF NOT EXISTS `publication_data` (
+  `recordNumber` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Record number',
+  `mpid` varchar(100) NOT NULL COMMENT 'Manifold publication ID',
+  `scopus_eid` varchar(100) DEFAULT NULL COMMENT 'Scopus electronic identifier for publications',
+  `scopus_pubid` varchar(50) DEFAULT NULL COMMENT 'Scopus pub ID',
+  `pmid` varchar(50) DEFAULT NULL COMMENT 'PubMed ID',
+  `doi` varchar(150) DEFAULT NULL,
+  `pubTitle` varchar(2000) NOT NULL,
+  `pubName` varchar(2000) NOT NULL,
+  `pubDate` date NOT NULL,
+  `displayDate` varchar(150) NOT NULL COMMENT 'Pub date displayed in original',
+  `authors` mediumtext NOT NULL COMMENT 'Authors, pipe-delimited',
+  `pageRange` varchar(50) NOT NULL,
+  `volume` varchar(25) DEFAULT NULL,
+  `issue` varchar(25) DEFAULT NULL,
+  `citedByCount` int(10) DEFAULT NULL,
+  `docType` varchar(10) DEFAULT NULL,
+  `docTypeDescription` varchar(50) DEFAULT NULL,
+  `source` varchar(100) NOT NULL COMMENT 'Source of the publication data',
+  `lastUpdate` datetime DEFAULT NULL,
+  `update_error` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Flags whether there was a problem in the update process',
+  PRIMARY KEY (`recordNumber`),
+  KEY `mpid` (`mpid`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='Stores all publication data' AUTO_INCREMENT=6 ;
+
+--
+-- Dumping data for table `publication_data`
+--
+
+INSERT INTO `publication_data` (`recordNumber`, `mpid`, `scopus_eid`, `scopus_pubid`, `pmid`, `doi`, `pubTitle`, `pubName`, `pubDate`, `displayDate`, `authors`, `pageRange`, `volume`, `issue`, `citedByCount`, `docType`, `docTypeDescription`, `source`, `lastUpdate`, `update_error`) VALUES
+(1, 'mpid_1', 'e1234', '1234', NULL, NULL, 'Publication title 1', 'Journal 1', '2001-07-01', 'July 1, 2001', 'Author 1|Author 2|Author 3', '1-5', '3', '4', 50, 'ar', 'Article', 'scopus', NULL, 0),
+(2, 'mpid_2', 'e2345', '2345', NULL, NULL, 'Publication title 2', 'Journal 2', '1990-01-01', 'January 1, 1990', 'Author 1|Author2', '5-10', '3', NULL, 6, 'ar', 'Article', 'scopus', NULL, 0),
+(3, 'mpid_3', 'e3456', '3456', NULL, NULL, 'Publication title 3', 'Journal 3', '2014-05-15', 'May 15, 2014', 'Author 1', '15-30', '9', '12', 15, 'ip', 'Article in press', 'scopus', NULL, 0),
+(4, 'mpid_4', 'e4567', '4567', '98765432', NULL, 'Publication title 4', 'Journal 4', '2015-03-31', 'March 2015', 'Author 1|Author 2|Author 3|Author 4|Author 5|Author 6|Author 7', '27-44', '4', NULL, NULL, NULL, NULL, 'pubmed', NULL, 0),
+(5, 'mpid_5', 'e5678', '5678', NULL, NULL, 'Publication title 5', 'Journal 5', '1998-09-01', 'September 1998', 'Author 1|Author 2|Author 3|Author 4|Author 5|Author 6|Author 7|Author 8|Author 9', '123-130', '5', NULL, NULL, NULL, NULL, 'pubmed', NULL, 0);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `reports`
+--
+
+CREATE TABLE IF NOT EXISTS `reports` (
+  `reportID` varchar(20) NOT NULL COMMENT 'Report ID',
+  `reportName` varchar(150) NOT NULL COMMENT 'Report name/title',
+  `reportDescription` varchar(1000) NOT NULL COMMENT 'Report description',
+  `reportURL` varchar(150) NOT NULL COMMENT 'Report location in directory',
+  `report_dataURL` varchar(150) DEFAULT NULL COMMENT 'Data file for report, if applicable',
+  PRIMARY KEY (`reportID`),
+  UNIQUE KEY `reportID` (`reportID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Stores data associated with reports from system data';
+
+--
+-- Dumping data for table `reports`
+--
+
+INSERT INTO `reports` (`reportID`, `reportName`, `reportDescription`, `reportURL`, `report_dataURL`) VALUES
+('R0001', 'Quarterly/cumulative publication totals, by department', 'Provides a report with quarterly and cumulative Medical School faculty publication totals (including first/last author scholarship) for the current year, compared against cumulative publication totals for the previous year. Totals are calculated by department and overall.', 'quarterly_cumulative_publication_totals.php', 'data_source.json');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `temp_submissions`
+--
+
+CREATE TABLE IF NOT EXISTS `temp_submissions` (
+  `recordNumber` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Record number',
+  `mpid` varchar(100) DEFAULT NULL COMMENT 'MPID, if exists',
+  `internetID` varchar(50) NOT NULL COMMENT 'x500 corresponding to submission',
+  `pmid` varchar(50) NOT NULL COMMENT 'PubMed ID',
+  `doi` varchar(150) DEFAULT NULL,
+  `pubTitle` varchar(2000) DEFAULT NULL,
+  `pubName` varchar(2000) DEFAULT NULL,
+  `pubDate` date DEFAULT NULL,
+  `displayDate` varchar(150) DEFAULT NULL COMMENT 'Pub date displayed in original',
+  `authors` mediumtext COMMENT 'Authors, pipe-delimited',
+  `authorPosition` varchar(25) NOT NULL COMMENT 'Position in author list',
+  `authorCount` varchar(25) NOT NULL COMMENT 'Total author count',
+  `pageRange` varchar(50) DEFAULT NULL,
+  `volume` varchar(25) DEFAULT NULL,
+  `issue` varchar(25) DEFAULT NULL,
+  `source` varchar(100) NOT NULL COMMENT 'Source of the publication data',
+  `status` varchar(50) NOT NULL COMMENT 'Status of submission (ie, pending)',
+  `verification_code` varchar(100) NOT NULL COMMENT 'Verification code, from e-mail',
+  `date_verified` datetime DEFAULT NULL COMMENT 'Date submission was verified by faculty',
+  PRIMARY KEY (`recordNumber`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=230 ;
+
+--
+-- Dumping data for table `temp_submissions`
+--
+
+INSERT INTO `temp_submissions` (`recordNumber`, `mpid`, `internetID`, `pmid`, `doi`, `pubTitle`, `pubName`, `pubDate`, `displayDate`, `authors`, `authorPosition`, `authorCount`, `pageRange`, `volume`, `issue`, `source`, `status`, `verification_code`, `date_verified`) VALUES
+(1, 'mpid_4', 'test_user', '98765432', '', 'Publication title 4', 'Journal 4', '2015-03-31', 'March 2015', 'Author 1|Author 2|Author 3|Author 4|Author 5|Author 6|Author 7', '7', '7', '27-44', '4', '', 'pubmed', 'VERIFIED', 'EXPIRED', '2015-01-22 17:13:50'),
+(229, 'mpid_6', 'test_user', '12345678', NULL, 'Publication title 6', 'Journal 6', '2000-01-01', 'January 2000', 'Author 1|Author 2', '2', '2', '60-70', '9', NULL, 'pubmed', 'PENDING', 'ABCD1234', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `visualizations`
+--
+
+CREATE TABLE IF NOT EXISTS `visualizations` (
+  `visID` varchar(20) NOT NULL COMMENT 'Visualization ID',
+  `visName` varchar(150) NOT NULL COMMENT 'Visualization name',
+  `visDescription` varchar(1500) NOT NULL COMMENT 'Visualization description',
+  `visURL` varchar(150) NOT NULL COMMENT 'Visualization location in directory',
+  `vis_dataURL` varchar(150) DEFAULT NULL COMMENT 'Data file source for viz, if applicable',
+  `display_faculty` tinyint(1) NOT NULL COMMENT 'Display on faculty profile',
+  `display_dept` tinyint(1) NOT NULL COMMENT 'Display on departmental profile',
+  `display_custom` tinyint(1) NOT NULL COMMENT 'Display on custom profile',
+  PRIMARY KEY (`visID`),
+  UNIQUE KEY `reportID` (`visID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Stores information about visualizations';
+
+--
+-- Dumping data for table `visualizations`
+--
+
+INSERT INTO `visualizations` (`visID`, `visName`, `visDescription`, `visURL`, `vis_dataURL`, `display_faculty`, `display_dept`, `display_custom`) VALUES
+('V0001', 'Publications ranked by citation count', 'Here, this individual''s publications are ranked in descending order by citation count; this ordering is used to calculate the <i>h</i>- and <i>h</i>(<i>fl</i>)-index. Those papers colored in yellow are publications on which the profiled individual is listed as first or last author.<br><br>Clicking on individual bars opens a new window with the original Scopus record for each respective publication.', 'V0001_pubs-by-citation-count.js', NULL, 1, 0, 0),
+('V0002', 'Relative impact of publications over time', 'This graph shows this individual''s publications and their relative impact over time. Each circle represents a published paper, indicated by year on the horizontal axis and citation count on the vertical axis. The sizes of the circles illustrate relative comparisons of citations to each paper; a larger circle means that paper has received a larger share of citations made to the profiled individual''s scholarship.<br><br>Papers on which the faculty member is first or last author are represented in gold.<br><br>Clicking on individual circles opens a new window with the original Scopus record for each respective publication.', 'V0002_pubs-bubble-chart.js', NULL, 1, 0, 0),
+('V0003', 'Cumulative <i>h</i>-index and <i>h</i>(<i>fl</i>)-index over time', 'Here, this individual''s <i>h</i>-index and <i>h</i>(<i>fl</i>)-index are plotted cumulatively over time. For each year over their publication career, these indexes are recalculated considering publications and their citation counts up through that year. Note that the citation counts used to calculate yearly indices in this graph are current values, not values at those given points in time.<br><br>The blue line illustrates cumulative <i>h</i>-index; the gold line shows cumulative <i>h</i>(<i>fl</i>)-index.', 'V0003_h-over-time.js', NULL, 1, 0, 0),
+('V0004', 'Departmental/subset distribution of impact indexes', 'This diagram illustrates the distribution of impact indexes for the profiled department or faculty subset. Blue bars indicate the number of faculty with the respective <i>h</i>-index value on the horizontal axis; gold bars represent <i>h</i>(<i>fl</i>)-index values.<br><br>', 'V0004_dept-h-distribution.js', NULL, 1, 1, 1),
+('V0005', 'Correlation between <i>h</i>-indices and <i>h</i>-citations', 'This diagram illustrates the correlation between <i>h</i>-index, <i>h</i>-citations, and total publication count for all paid faculty in the Medical School. Each circle represents a faculty member whose position is determined on the horizontal axis by <i>h</i>-index and the vertical axis by total sum of citations to all papers in the faculty''s <i>h</i>-core. The relative sizes of circles indicate total publication counts for faculty; larger circles mean a larger total number of publications by the given faculty. When you hover over a faculty member, similar faculty by shared <i>h</i>-index and <i>h</i>-citations are highlighted, making it easy to compare faculty based on their output and impact. ', 'h_matrix/V0005_h-matrix.js', 'hIndex_hCitations_data.txt', 1, 1, 1);
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

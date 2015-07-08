@@ -1,0 +1,8 @@
+/username/	/h-index/	/h-citations/	/pubcount/	/firstname/	/lastname/	/dept_id/
+test_user1	21	1954	61	Test	User1	dept_id_1
+test_user2	10	428	17	Test	User2	dept_id_4
+test_user3	1	2	2	Test	User3	dept_id_1
+test_user4	5	42	12	Test	User4	dept_id_2
+test_user5	7	232	12	Test	User5	dept_id_5
+test_user6	2	17	4	Test	User6	dept_id_3
+test_user7	1	58	1	Test	User7	dept_id_3

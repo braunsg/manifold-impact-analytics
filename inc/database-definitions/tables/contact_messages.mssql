@@ -1,0 +1,74 @@
+/*
+
+manifold-impact-analytics
+https://github.com/braunsg/manifold-impact-analytics
+
+Open source code for Manifold, an automated impact analytics and visualization platform developed by
+Steven Braun.
+
+COPYRIGHT (C) 2015 Steven Braun
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+
+A full copy of the license is included in LICENSE.md.
+
+//////////////////////////////////////////////////////////////////////////////////////////
+/////// About this file
+
+MySQL query generating contact_messages table
+
+*/
+
+-- phpMyAdmin SQL Dump
+-- version 4.1.12
+-- http://www.phpmyadmin.net
+--
+-- Host: localhost
+-- Generation Time: Jul 08, 2015 at 08:27 PM
+-- Server version: 5.6.21
+-- PHP Version: 5.5.14
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+
+--
+-- Database: `manifold_example`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `contact_messages`
+--
+
+CREATE TABLE IF NOT EXISTS `contact_messages` (
+  `contact_record_no` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Index number for contact message',
+  `contact_name` varchar(150) NOT NULL COMMENT 'Contact name',
+  `contact_email` varchar(40) NOT NULL COMMENT 'Contact email',
+  `contact_message` varchar(2000) NOT NULL COMMENT 'Message',
+  PRIMARY KEY (`contact_record_no`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Stores messages sent through the contact form' AUTO_INCREMENT=2 ;
+
+--
+-- Dumping data for table `contact_messages`
+--
+
+INSERT INTO `contact_messages` (`contact_record_no`, `contact_name`, `contact_email`, `contact_message`) VALUES
+(1, 'Test user', 'test@example.com', 'How do I use Manifold?');
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

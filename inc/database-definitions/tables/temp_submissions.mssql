@@ -1,0 +1,90 @@
+/*
+
+manifold-impact-analytics
+https://github.com/braunsg/manifold-impact-analytics
+
+Open source code for Manifold, an automated impact analytics and visualization platform developed by
+Steven Braun.
+
+COPYRIGHT (C) 2015 Steven Braun
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+
+A full copy of the license is included in LICENSE.md.
+
+//////////////////////////////////////////////////////////////////////////////////////////
+/////// About this file
+
+MySQL query generating temp_submissions table
+
+*/
+
+-- phpMyAdmin SQL Dump
+-- version 4.1.12
+-- http://www.phpmyadmin.net
+--
+-- Host: localhost
+-- Generation Time: Jul 08, 2015 at 08:29 PM
+-- Server version: 5.6.21
+-- PHP Version: 5.5.14
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+
+--
+-- Database: `manifold_example`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `temp_submissions`
+--
+
+CREATE TABLE IF NOT EXISTS `temp_submissions` (
+  `recordNumber` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Record number',
+  `mpid` varchar(100) DEFAULT NULL COMMENT 'MPID, if exists',
+  `internetID` varchar(50) NOT NULL COMMENT 'x500 corresponding to submission',
+  `pmid` varchar(50) NOT NULL COMMENT 'PubMed ID',
+  `doi` varchar(150) DEFAULT NULL,
+  `pubTitle` varchar(2000) DEFAULT NULL,
+  `pubName` varchar(2000) DEFAULT NULL,
+  `pubDate` date DEFAULT NULL,
+  `displayDate` varchar(150) DEFAULT NULL COMMENT 'Pub date displayed in original',
+  `authors` mediumtext COMMENT 'Authors, pipe-delimited',
+  `authorPosition` varchar(25) NOT NULL COMMENT 'Position in author list',
+  `authorCount` varchar(25) NOT NULL COMMENT 'Total author count',
+  `pageRange` varchar(50) DEFAULT NULL,
+  `volume` varchar(25) DEFAULT NULL,
+  `issue` varchar(25) DEFAULT NULL,
+  `source` varchar(100) NOT NULL COMMENT 'Source of the publication data',
+  `status` varchar(50) NOT NULL COMMENT 'Status of submission (ie, pending)',
+  `verification_code` varchar(100) NOT NULL COMMENT 'Verification code, from e-mail',
+  `date_verified` datetime DEFAULT NULL COMMENT 'Date submission was verified by faculty',
+  PRIMARY KEY (`recordNumber`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=230 ;
+
+--
+-- Dumping data for table `temp_submissions`
+--
+
+INSERT INTO `temp_submissions` (`recordNumber`, `mpid`, `internetID`, `pmid`, `doi`, `pubTitle`, `pubName`, `pubDate`, `displayDate`, `authors`, `authorPosition`, `authorCount`, `pageRange`, `volume`, `issue`, `source`, `status`, `verification_code`, `date_verified`) VALUES
+(1, 'mpid_4', 'test_user', '98765432', '', 'Publication title 4', 'Journal 4', '2015-03-31', 'March 2015', 'Author 1|Author 2|Author 3|Author 4|Author 5|Author 6|Author 7', '7', '7', '27-44', '4', '', 'pubmed', 'VERIFIED', 'EXPIRED', '2015-01-22 17:13:50'),
+(229, 'mpid_6', 'test_user', '12345678', NULL, 'Publication title 6', 'Journal 6', '2000-01-01', 'January 2000', 'Author 1|Author 2', '2', '2', '60-70', '9', NULL, 'pubmed', 'PENDING', 'ABCD1234', NULL);
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

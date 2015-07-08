@@ -1,0 +1,83 @@
+/*
+
+manifold-impact-analytics
+https://github.com/braunsg/manifold-impact-analytics
+
+Open source code for Manifold, an automated impact analytics and visualization platform developed by
+Steven Braun.
+
+COPYRIGHT (C) 2015 Steven Braun
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+
+A full copy of the license is included in LICENSE.md.
+
+//////////////////////////////////////////////////////////////////////////////////////////
+/////// About this file
+
+MySQL query generating visualizations table
+
+*/
+
+-- phpMyAdmin SQL Dump
+-- version 4.1.12
+-- http://www.phpmyadmin.net
+--
+-- Host: localhost
+-- Generation Time: Jul 08, 2015 at 08:29 PM
+-- Server version: 5.6.21
+-- PHP Version: 5.5.14
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+
+--
+-- Database: `manifold_example`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `visualizations`
+--
+
+CREATE TABLE IF NOT EXISTS `visualizations` (
+  `visID` varchar(20) NOT NULL COMMENT 'Visualization ID',
+  `visName` varchar(150) NOT NULL COMMENT 'Visualization name',
+  `visDescription` varchar(1500) NOT NULL COMMENT 'Visualization description',
+  `visURL` varchar(150) NOT NULL COMMENT 'Visualization location in directory',
+  `vis_dataURL` varchar(150) DEFAULT NULL COMMENT 'Data file source for viz, if applicable',
+  `display_faculty` tinyint(1) NOT NULL COMMENT 'Display on faculty profile',
+  `display_dept` tinyint(1) NOT NULL COMMENT 'Display on departmental profile',
+  `display_custom` tinyint(1) NOT NULL COMMENT 'Display on custom profile',
+  PRIMARY KEY (`visID`),
+  UNIQUE KEY `reportID` (`visID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Stores information about visualizations';
+
+--
+-- Dumping data for table `visualizations`
+--
+
+INSERT INTO `visualizations` (`visID`, `visName`, `visDescription`, `visURL`, `vis_dataURL`, `display_faculty`, `display_dept`, `display_custom`) VALUES
+('V0001', 'Publications ranked by citation count', 'Here, this individual''s publications are ranked in descending order by citation count; this ordering is used to calculate the <i>h</i>- and <i>h</i>(<i>fl</i>)-index. Those papers colored in yellow are publications on which the profiled individual is listed as first or last author.<br><br>Clicking on individual bars opens a new window with the original Scopus record for each respective publication.', 'V0001_pubs-by-citation-count.js', NULL, 1, 0, 0),
+('V0002', 'Relative impact of publications over time', 'This graph shows this individual''s publications and their relative impact over time. Each circle represents a published paper, indicated by year on the horizontal axis and citation count on the vertical axis. The sizes of the circles illustrate relative comparisons of citations to each paper; a larger circle means that paper has received a larger share of citations made to the profiled individual''s scholarship.<br><br>Papers on which the faculty member is first or last author are represented in gold.<br><br>Clicking on individual circles opens a new window with the original Scopus record for each respective publication.', 'V0002_pubs-bubble-chart.js', NULL, 1, 0, 0),
+('V0003', 'Cumulative <i>h</i>-index and <i>h</i>(<i>fl</i>)-index over time', 'Here, this individual''s <i>h</i>-index and <i>h</i>(<i>fl</i>)-index are plotted cumulatively over time. For each year over their publication career, these indexes are recalculated considering publications and their citation counts up through that year. Note that the citation counts used to calculate yearly indices in this graph are current values, not values at those given points in time.<br><br>The blue line illustrates cumulative <i>h</i>-index; the gold line shows cumulative <i>h</i>(<i>fl</i>)-index.', 'V0003_h-over-time.js', NULL, 1, 0, 0),
+('V0004', 'Departmental/subset distribution of impact indexes', 'This diagram illustrates the distribution of impact indexes for the profiled department or faculty subset. Blue bars indicate the number of faculty with the respective <i>h</i>-index value on the horizontal axis; gold bars represent <i>h</i>(<i>fl</i>)-index values.<br><br>', 'V0004_dept-h-distribution.js', NULL, 1, 1, 1),
+('V0005', 'Correlation between <i>h</i>-indices and <i>h</i>-citations', 'This diagram illustrates the correlation between <i>h</i>-index, <i>h</i>-citations, and total publication count for all paid faculty in the Medical School. Each circle represents a faculty member whose position is determined on the horizontal axis by <i>h</i>-index and the vertical axis by total sum of citations to all papers in the faculty''s <i>h</i>-core. The relative sizes of circles indicate total publication counts for faculty; larger circles mean a larger total number of publications by the given faculty. When you hover over a faculty member, similar faculty by shared <i>h</i>-index and <i>h</i>-citations are highlighted, making it easy to compare faculty based on their output and impact. ', 'h_matrix/V0005_h-matrix.js', 'hIndex_hCitations_data.txt', 1, 1, 1);
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

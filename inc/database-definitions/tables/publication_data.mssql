@@ -1,0 +1,95 @@
+/*
+
+manifold-impact-analytics
+https://github.com/braunsg/manifold-impact-analytics
+
+Open source code for Manifold, an automated impact analytics and visualization platform developed by
+Steven Braun.
+
+COPYRIGHT (C) 2015 Steven Braun
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+
+A full copy of the license is included in LICENSE.md.
+
+//////////////////////////////////////////////////////////////////////////////////////////
+/////// About this file
+
+MySQL query generating publication_data table
+
+*/
+
+-- phpMyAdmin SQL Dump
+-- version 4.1.12
+-- http://www.phpmyadmin.net
+--
+-- Host: localhost
+-- Generation Time: Jul 08, 2015 at 08:28 PM
+-- Server version: 5.6.21
+-- PHP Version: 5.5.14
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+
+--
+-- Database: `manifold_example`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `publication_data`
+--
+
+CREATE TABLE IF NOT EXISTS `publication_data` (
+  `recordNumber` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Record number',
+  `mpid` varchar(100) NOT NULL COMMENT 'Manifold publication ID',
+  `scopus_eid` varchar(100) DEFAULT NULL COMMENT 'Scopus electronic identifier for publications',
+  `scopus_pubid` varchar(50) DEFAULT NULL COMMENT 'Scopus pub ID',
+  `pmid` varchar(50) DEFAULT NULL COMMENT 'PubMed ID',
+  `doi` varchar(150) DEFAULT NULL,
+  `pubTitle` varchar(2000) NOT NULL,
+  `pubName` varchar(2000) NOT NULL,
+  `pubDate` date NOT NULL,
+  `displayDate` varchar(150) NOT NULL COMMENT 'Pub date displayed in original',
+  `authors` mediumtext NOT NULL COMMENT 'Authors, pipe-delimited',
+  `pageRange` varchar(50) NOT NULL,
+  `volume` varchar(25) DEFAULT NULL,
+  `issue` varchar(25) DEFAULT NULL,
+  `citedByCount` int(10) DEFAULT NULL,
+  `docType` varchar(10) DEFAULT NULL,
+  `docTypeDescription` varchar(50) DEFAULT NULL,
+  `source` varchar(100) NOT NULL COMMENT 'Source of the publication data',
+  `lastUpdate` datetime DEFAULT NULL,
+  `update_error` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Flags whether there was a problem in the update process',
+  PRIMARY KEY (`recordNumber`),
+  KEY `mpid` (`mpid`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='Stores all publication data' AUTO_INCREMENT=6 ;
+
+--
+-- Dumping data for table `publication_data`
+--
+
+INSERT INTO `publication_data` (`recordNumber`, `mpid`, `scopus_eid`, `scopus_pubid`, `pmid`, `doi`, `pubTitle`, `pubName`, `pubDate`, `displayDate`, `authors`, `pageRange`, `volume`, `issue`, `citedByCount`, `docType`, `docTypeDescription`, `source`, `lastUpdate`, `update_error`) VALUES
+(1, 'mpid_1', 'e1234', '1234', NULL, NULL, 'Publication title 1', 'Journal 1', '2001-07-01', 'July 1, 2001', 'Author 1|Author 2|Author 3', '1-5', '3', '4', 50, 'ar', 'Article', 'scopus', NULL, 0),
+(2, 'mpid_2', 'e2345', '2345', NULL, NULL, 'Publication title 2', 'Journal 2', '1990-01-01', 'January 1, 1990', 'Author 1|Author2', '5-10', '3', NULL, 6, 'ar', 'Article', 'scopus', NULL, 0),
+(3, 'mpid_3', 'e3456', '3456', NULL, NULL, 'Publication title 3', 'Journal 3', '2014-05-15', 'May 15, 2014', 'Author 1', '15-30', '9', '12', 15, 'ip', 'Article in press', 'scopus', NULL, 0),
+(4, 'mpid_4', 'e4567', '4567', '98765432', NULL, 'Publication title 4', 'Journal 4', '2015-03-31', 'March 2015', 'Author 1|Author 2|Author 3|Author 4|Author 5|Author 6|Author 7', '27-44', '4', NULL, NULL, NULL, NULL, 'pubmed', NULL, 0),
+(5, 'mpid_5', 'e5678', '5678', NULL, NULL, 'Publication title 5', 'Journal 5', '1998-09-01', 'September 1998', 'Author 1|Author 2|Author 3|Author 4|Author 5|Author 6|Author 7|Author 8|Author 9', '123-130', '5', NULL, NULL, NULL, NULL, 'pubmed', NULL, 0);
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
